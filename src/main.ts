@@ -2,11 +2,20 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { env } from 'config';
+import { env } from 'src/config';
+import { MongoExceptionFilter } from 'src/helper/mongo-exception.filter';
+import { ValidationExceptionFilter } from 'src/helper/validation-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.useGlobalPipes(new ValidationPipe());
+
+  app.useGlobalFilters(
+    new ValidationExceptionFilter(),
+    new MongoExceptionFilter(),
+  );
+
   app.setGlobalPrefix('api/v1');
 
   // Enable CORS with specific options

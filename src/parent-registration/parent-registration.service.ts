@@ -8,6 +8,7 @@ import {
   UpdateParentRegistrationDto,
 } from './dto';
 import { Parent, ParentsDocument } from './schemas/parent.schema';
+import { IParent } from './interfaces/parent.interfaces';
 
 @Injectable()
 export class ParentRegistrationService {
@@ -15,9 +16,10 @@ export class ParentRegistrationService {
     @InjectModel(Parent.name) private ParentModel: Model<ParentsDocument>,
   ) {}
 
-  async create(createUserDto: CreateParentRegistrationDto): Promise<Parent> {
+  async create(createUserDto: CreateParentRegistrationDto): Promise<IParent> {
     const newUser = new this.ParentModel(createUserDto);
-    return newUser.save();
+    const savedUser = await newUser.save();
+    return savedUser.toObject() as unknown as IParent;
   }
 
   async findAll(): Promise<Parent[]> {
@@ -26,6 +28,16 @@ export class ParentRegistrationService {
 
   async findOne(id: string): Promise<Parent> {
     return this.ParentModel.findById(id).exec();
+  }
+
+  async findsByEmail(email: string): Promise<Pick<Parent, 'email' | 'name'>[]> {
+    return this.ParentModel.find(
+      {
+        email: { $regex: email, $options: 'i' }, // Partial match on email
+        status: 'active', // Check if status is active
+      },
+      { _id: 1, name: 1, email: 1 }, // Projection to include only `_id` and `name`
+    ).exec();
   }
 
   async update(

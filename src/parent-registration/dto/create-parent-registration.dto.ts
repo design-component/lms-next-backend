@@ -7,26 +7,22 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { StatusType } from 'type';
+import { StatusType } from 'src/type';
 
 export class CreateParentRegistrationDto {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Name is required' })
   name: string;
 
   @ApiProperty()
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: 'Email is not valid' })
   email: string;
 
   @ApiProperty()
-  @IsString()
-  @MinLength(6)
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
   password: string;
 
   @ApiProperty()
-  @IsString()
-  @IsEnum(['active', 'inactive', 'deleted'])
+  @IsOptional()
   status: StatusType;
 }

@@ -3,3 +3,9 @@ export enum StatusType {
   INACTIVE = 'inactive',
   DELETED = 'deleted',
 }
+
+export enum RoleType {
+  ADMIN = 'admin',
+  PARENT = 'parent',
+  STUDENT = 'student',
+}
