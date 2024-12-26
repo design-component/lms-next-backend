@@ -62,9 +62,49 @@ export class StudentRegistrationController {
     return ResponseHelper.success({ user: data, accessToken });
   }
 
+  @Post('/login')
+  async login(@Body() loginDto: { email: string; password: string }) {
+    const { email, password } = loginDto;
+
+    // Find the user by email
+    const user = await this.studentRegistrationService.findByEmail(email);
+    if (!user) {
+      return ResponseHelper.error('Your email is not registered', 404);
+    }
+
+    // Compare the password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return ResponseHelper.error('Invalid password', 404);
+    }
+
+    // Check if the user is active
+    if (user.status !== StatusType.ACTIVE) {
+      return ResponseHelper.error('Your account is not active', 404);
+    }
+
+    // Create the JWT payload
+    const payload = { username: user.name, _id: user._id, role_type: 'parent' };
+    const accessToken = this.jwtService.sign(payload);
+
+    // Remove password from the response
+    delete user.password;
+
+    return ResponseHelper.success({ user, accessToken });
+  }
+
   @Get()
   findAll() {
     return this.studentRegistrationService.findAll();
+  }
+
+  @Get('/find-by-email/:email')
+  async findByEmail(@Param('email') email: string) {
+    // Find the user by email
+    const data = await this.studentRegistrationService.findsByEmail(email);
+
+    //   response
+    return ResponseHelper.success(data);
   }
 
   @Post('/send-invitation')

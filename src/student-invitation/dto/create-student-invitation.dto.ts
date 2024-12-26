@@ -4,7 +4,7 @@ import { IsEnum, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
 export class CreateStudentInvitationDto {
   @ApiProperty()
   @IsNotEmpty({ message: 'Parent is required' })
-  readonly parentId: string[];
+  readonly parentId: string;
 
   @ApiProperty()
   @IsNotEmpty({ message: 'Student is required' })

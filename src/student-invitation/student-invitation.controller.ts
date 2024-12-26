@@ -20,10 +20,25 @@ export class StudentInvitationController {
 
   @Post()
   async create(@Body() createStudentInvitationDto: CreateStudentInvitationDto) {
+    // check if already send invitation
+    const checkPreSend =
+      await this.studentInvitationService.findByStudentParentId(
+        createStudentInvitationDto.studentId, // student
+        createStudentInvitationDto.parentId, // parent
+      );
+
+    // check if conflict
+    if (checkPreSend) {
+      return ResponseHelper.error('Invitation already sent', 401, checkPreSend);
+    }
+
+    // create invitation
     const response = await this.studentInvitationService.create({
       ...createStudentInvitationDto,
       status: 'pending',
     });
+
+    // send invitation
     return ResponseHelper.success(response);
   }
 

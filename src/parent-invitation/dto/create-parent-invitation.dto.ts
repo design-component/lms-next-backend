@@ -8,7 +8,7 @@ export class CreateParentInvitationDto {
 
   @ApiProperty()
   @IsNotEmpty({ message: 'Student is required' })
-  readonly studentId: string[];
+  readonly studentId: string;
 
   @IsOptional()
   @MaxLength(256)

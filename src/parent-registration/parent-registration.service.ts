@@ -22,6 +22,10 @@ export class ParentRegistrationService {
     return savedUser.toObject() as unknown as IParent;
   }
 
+  async login(email: string, password: string): Promise<Parent> {
+    return;
+  }
+
   async findAll(): Promise<Parent[]> {
     return this.ParentModel.find().exec();
   }
@@ -30,13 +34,19 @@ export class ParentRegistrationService {
     return this.ParentModel.findById(id).exec();
   }
 
-  async findsByEmail(email: string): Promise<Pick<Parent, 'email' | 'name'>[]> {
+  async findByEmail(email: string): Promise<IParent | null> {
+    return await this.ParentModel.findOne({ email }).lean<IParent>();
+  }
+
+  async findsByEmail(
+    email: string,
+  ): Promise<Pick<Parent, 'email' | 'name' | 'password'>[]> {
     return this.ParentModel.find(
       {
         email: { $regex: email, $options: 'i' }, // Partial match on email
         status: 'active', // Check if status is active
       },
-      { _id: 1, name: 1, email: 1 }, // Projection to include only `_id` and `name`
+      { _id: 1, name: 1, email: 1, password: 1 }, // Projection to include only `_id` and `name`
     ).exec();
   }
 

@@ -13,19 +13,31 @@ import { IParentInvitation } from './interfaces/parent-invitation.interfaces';
 export class ParentInvitationService {
   constructor(
     @InjectModel(ParentInvitation.name)
-    private ParentModel: Model<ParentInvitationDocument>,
+    private ParentInvitationModel: Model<ParentInvitationDocument>,
   ) {}
 
   async create(
     createUserDto: CreateParentInvitationDto,
   ): Promise<IParentInvitation> {
-    const response = new this.ParentModel(createUserDto);
+    const response = new this.ParentInvitationModel(createUserDto);
     const save = await response.save();
     return save.toObject() as unknown as IParentInvitation;
   }
 
   findAll() {
     return `This action returns all parentInvitation`;
+  }
+
+  async findByStudentParentId(
+    studentId: string,
+    parentId: string,
+  ): Promise<IParentInvitation | null> {
+    const response = await this.ParentInvitationModel.findOne({
+      studentId: studentId,
+      parentId: parentId,
+    }).lean<IParentInvitation>();
+
+    return response;
   }
 
   findOne(id: number) {

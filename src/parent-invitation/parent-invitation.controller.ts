@@ -20,9 +20,24 @@ export class ParentInvitationController {
 
   @Post()
   async create(@Body() createParentInvitationDto: CreateParentInvitationDto) {
+    // check if already send invitation
+    const checkPreSend =
+      await this.parentInvitationService.findByStudentParentId(
+        createParentInvitationDto.studentId, // student
+        createParentInvitationDto.parentId, // parent
+      );
+
+    // check if conflict
+    if (checkPreSend) {
+      return ResponseHelper.error('Invitation already sent', 401, checkPreSend);
+    }
+
+    // create invitation
     const response = await this.parentInvitationService.create(
       createParentInvitationDto,
     );
+
+    // send invitation
     return ResponseHelper.success(response);
   }
 

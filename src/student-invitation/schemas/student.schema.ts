@@ -7,13 +7,14 @@ export type StudentInvitationDocument = HydratedDocument<StudentInvitation>;
   timestamps: true,
 })
 export class StudentInvitation {
-  @Prop({ required: true, ref: 'Parent', type: Types.ObjectId })
-  readonly parentId: string[];
+  @Prop({ required: true, ref: 'Parent', type: Types.ObjectId, unique: true })
+  readonly parentId: string;
 
   @Prop({
     required: true,
     ref: 'Student',
     type: Types.ObjectId,
+    unique: true,
   })
   readonly studentId: string;
 

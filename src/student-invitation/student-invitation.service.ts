@@ -26,6 +26,17 @@ export class StudentInvitationService {
     return save.toObject() as unknown as IStudentInvitation;
   }
 
+  async findByStudentParentId(
+    studentId: string,
+    parentId: string,
+  ): Promise<IStudentInvitation | null> {
+    const response = await this.StudentInvitationModel.findOne({
+      studentId: studentId,
+      parentId: parentId,
+    }).lean<IStudentInvitation>();
+    return response;
+  }
+
   findAll() {
     return `This action returns all studentInvitation`;
   }

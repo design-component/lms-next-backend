@@ -20,6 +20,22 @@ export class StudentRegistrationService {
     return savedUser.toObject() as unknown as IStudent;
   }
 
+  async findByEmail(email: string): Promise<IStudent | null> {
+    return await this.StudentModel.findOne({ email }).lean<IStudent>();
+  }
+
+  async findsByEmail(
+    email: string,
+  ): Promise<Pick<Student, 'email' | 'name'>[]> {
+    return this.StudentModel.find(
+      {
+        email: { $regex: email, $options: 'i' }, // Partial match on email
+        status: 'active', // Check if status is active
+      },
+      { _id: 1, name: 1, email: 1, password: 1 }, // Projection to include only `_id` and `name`
+    ).exec();
+  }
+
   findAll() {
     return `This action returns all studentRegistration`;
   }
